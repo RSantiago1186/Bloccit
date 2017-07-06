@@ -3,9 +3,9 @@ class Post < ActiveRecord::Base
     belongs_to :user
     has_many :comments, dependent: :destroy
     has_many :votes, dependent: :destroy
+    has_many :favorites, dependent: :destroy
     has_many :labelings, as: :labelable
     has_many :labels, through: :labelings
-    after_create :create_vote
     
     default_scope { order('rank DESC') }
     
@@ -32,10 +32,12 @@ class Post < ActiveRecord::Base
         update_attribute(:rank, new_rank)
     end
     
+    after_create :favorite_post
+    
     private
     
-    def create_vote
-        user.votes.create(value: 1, post: self)
+    def favorite_post
+        user.favorites.create(post: self)
     end
-        
+
 end

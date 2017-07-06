@@ -14,6 +14,7 @@ RSpec.describe Post, type: :model do
   
   it { is_expected.to have_many(:comments) }
   it { is_expected.to have_many(:votes) }
+  it { is_expected.to have_many(:favorites) }
   it { is_expected.to belong_to(:topic) }
   it { is_expected.to belong_to(:user) }
   
@@ -31,12 +32,6 @@ RSpec.describe Post, type: :model do
     end
   end
   
-  describe "#create_vote" do
-    it "up_votes the post that was just created" do
-      expect( post.up_votes ).to eq(1)
-    end
-  end
-
   describe "voting" do
     before do
       3.times { post.votes.create!(value: 1) }
@@ -81,8 +76,14 @@ RSpec.describe Post, type: :model do
         expect(post.rank).to eq (old_rank - 1)
       end
     end
-        
       
   end
+  
+  describe "after_create" do
+    it "favorites the post the user just made" do
+      expect(user.favorite_for(post)).not_to be_nil
+    end
+  end
+    
   
 end
